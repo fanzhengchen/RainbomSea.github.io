@@ -1,108 +1,63 @@
-# Site settings | 网站设置
-title: RainbomSea
-SEOTitle: RainbomSea的博客 | RaimbomSea
-header-img: img/home-bg-he.png
-email: RainbomSea@qq.com
-description: "RainbomSea的博客"
-keyword: "RainbomSea, RainbomSea的博客, rainbom sea, rainbomsea, Python blog"
-url: "http://RainbomSea.github.io"          # your host, for absolute URL
-baseurl: ""      # for example, '/blog' if your blog hosted on 'host/blog'
-github_repo: "https://github.com/RainbomSea/RainbomSea.github.io.git" #code repository | 代码仓库
+# Developer's Note: This is a sample _config.yml file offered with
+# jekyll-theme-prologue for your convenience. To use it, move it to your
+# project's root directory. Please note that the following lines are
+# NECESSARY for Prologue to work correctly:
+#
+# theme: jekyll-theme-prologue
+# collections: [sections]
+#
+# They activate the theme and tell Jekyll to find your homepage content
+# in /_sections. Note where "sections" starts with an underscore
+# and where it doesn't. The social settings will make links to
+# Twitter, etc., but only if you give the URL.
+#
+# Also, be sure to customize url and baseurl for your site.
+#
+# ---------------------------------------------------------------
+#
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
 
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+title: Your awesome title
+subtitle: Your awesome subtitle
+description: >- # this means to ignore newlines until "baseurl:"
+  This is the demo site for a Jekyll theme version of
+  HTML5 UP's sleek, responsive site template Prologue.
+author: Your Incredible Name
+email: your-email@example.com
+avatar: assets/images/avatar.jpg
 
-# Sidebar settings | 侧边栏设置
-sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "就算这样,也要笑着去努力啊!"
-sidebar-avatar: /img/head.jpg      # 头像
+# You'll want to customize url and baseurl for your own site:
+baseurl: "/jekyll-theme-prologue" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site
 
+# Social settings
+# Make sure to include the full url including protocol, e.g. https://github.com/chrisbobbe
+twitter_url:
+facebook_url:
+googleplus_url:
+instagram_url:
+linkedin_url:
+github_url:
+pinterest_url:
+slack_url:
+dribbble_url:
 
+# Google Analytics Tracking ID goes here:
+google_analytics:
 
-
-
-# SNS settings | 社交网络设置
-facebook_username: rainbom.z
-github_username: RainbomSea
-zhihu_username: RainbomSea
-csdn_username: qq_39268193
-
-
-
-
-# Build settings
-# from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
-permalink: pretty
-paginate: 10
-# 转换时排除某些文件夹或文件。被排除的文件或文件夹的路径是相对于网站源码目录的，源码目录以外不受影响。
-exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
-anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
-
-Regeneration: true    # 允许文件修改时自动重新生成网站。
-
-
-
-
-
-# Gems
-# from PR#40, to support local preview for Jekyll 3.0
-plugins: [jekyll-paginate]
-
-
-
-
-# Markdown settings
-# replace redcarpet to kramdown,
-# although redcarpet can auto highlight code, the lack of header-id make the catalog impossible, so I switch to kramdown
-# document: http://jekyllrb.com/docs/configuration/#kramdown
-markdown: kramdown
-highlighter: rouge
-kramdown:
-  input: GFM                            # use Github Flavored Markdown !important
-
-# Gitalk
-gitalk:
-  enable: true    # 是否开启Gitalk评论
-  clientID: 99ecf1fdc9b7e357ebb7                            #生成的clientID
-  clientSecret: a866f00709e418ffd35d9986e130ff7f01a3cba2    #生成的clientSecret
-  repo: RainbomSea.github.io    #仓库名称
-  owner: RainbomSea    # github用户名
-  admin: RainbomSea
-  distractionFreeMode: true # 是否启用类似FB的阴影遮罩
-
-
-# 统计
-
-# Analytics settings
-# Baidu Analytics
-ba_track_id: 9acee03023ad0c6c993dd86df81e2ac8
-
-
-# Featured Tags
-featured-tags: true                     # 是否使用首页标签
-featured-condition-size: 0              # 相同标签数量大于这个数，才会出现在首页
-
-
-
-# Progressive Web Apps
-chrome-tab-theme-color: "#000000"
-service-worker: true
-
-
-
-# Friends
-friends: [
-    {
-        title: "GitHub·RainbomSea",
-        href: "http://RainbomSea.github.io"
-    },{
-        title: "CSDN·RainbomSea",
-        href: "https://blog.csdn.net/qq_39268193"
-    },{
-        title: "知乎·RainbomSea",
-        href: "https://www.zhihu.com/people/RainbomSea"
-    },{
-        title: "GitBook·RainbomSea",
-        href: "https://legacy.gitbook.com/@rainbomsea"
-    }
-]
-
-theme: jekyll-theme-minimal
+# The following settings are NECESSARY for the Prologue theme to run:
+theme: jekyll-theme-prologue
+collections: [sections]
