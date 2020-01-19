@@ -1,13 +1,85 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  
+
+
 
   
-  <title>db_trasnportation | Hexo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="数据数据迁移其实主要就是垂直拆分和分库分表 垂直拆分和分库分表过程中主要数据库的操作就是双写和查询 我们会有开关来控制状态的转换，公司业务里orm主要是用mybatis本文主要目的是为了减少代码的侵入性和迁移过程中数据库读写代码的可复用性，实际项目里单个表涉及的查询多达几十个，并且涉及到几十个文件的修改，为了减少迁移过程中对业务代码的修改，我文章下面会给一个样例(毕竟不能带上公司业务代码)。我目前">
+
+
+<html class="theme-next muse use-motion" lang="cn">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="数据数据迁移其实主要就是垂直拆分和分库分表 垂直拆分和分库分表过程中主要数据库的操作就是双写和查询 我们会有开关来控制状态的转换，公司业务里orm主要是用mybatis本文主要目的是为了减少代码的侵入性和迁移过程中数据库读写代码的可复用性，实际项目里单个表涉及的查询多达几十个，并且涉及到几十个文件的修改，为了减少迁移过程中对业务代码的修改，我文章下面会给一个样例(毕竟不能带上公司业务代码)。我目前">
 <meta property="og:type" content="article">
 <meta property="og:title" content="db_trasnportation">
 <meta property="og:url" content="https://fanzhengchen.github.io/2020/01/19/db_trasnportation/index.html">
@@ -18,75 +90,214 @@
 <meta property="article:modified_time" content="2020-01-19T12:45:16.032Z">
 <meta property="article:author" content="fanzhengchen">
 <meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://fanzhengchen.github.io/2020/01/19/db_trasnportation/"/>
+
+
+
+
+
+  <title>db_trasnportation | Hexo</title>
   
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  
-<link rel="stylesheet" href="/css/style.css">
+
+
+
+
+
+
+
 
 <meta name="generator" content="Hexo 4.2.0"></head>
 
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://fanzhengchen.github.io"></form>
-      </div>
-    </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main"><article id="post-db_trasnportation" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/01/19/db_trasnportation/" class="article-date">
-  <time datetime="2020-01-19T12:45:16.032Z" itemprop="datePublished">2020-01-19</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
+<body itemscope itemtype="http://schema.org/WebPage" lang="cn">
+
   
-    <h1 class="article-title" itemprop="name">
-      db_trasnportation
-    </h1>
+  
+    
   
 
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://fanzhengchen.github.io/2020/01/19/db_trasnportation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fanzhengchen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">db_trasnportation</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-19T20:45:16+08:00">
+                2020-01-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
       </header>
     
-    <div class="article-entry" itemprop="articleBody">
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
       
         <h1 id="数据数据迁移其实主要就是垂直拆分和分库分表-垂直拆分和分库分表过程中主要数据库的操作就是双写和查询-我们会有开关来控制状态的转换，公司业务里orm主要是用mybatis"><a href="#数据数据迁移其实主要就是垂直拆分和分库分表-垂直拆分和分库分表过程中主要数据库的操作就是双写和查询-我们会有开关来控制状态的转换，公司业务里orm主要是用mybatis" class="headerlink" title="数据数据迁移其实主要就是垂直拆分和分库分表 垂直拆分和分库分表过程中主要数据库的操作就是双写和查询 我们会有开关来控制状态的转换，公司业务里orm主要是用mybatis"></a>数据数据迁移其实主要就是垂直拆分和分库分表 垂直拆分和分库分表过程中主要数据库的操作就是双写和查询 我们会有开关来控制状态的转换，公司业务里orm主要是用mybatis</h1><p>本文主要目的是为了减少代码的侵入性和迁移过程中数据库读写代码的可复用性，实际项目里单个表涉及的查询多达几十个，并且涉及到几十个文件的修改，为了减少迁移过程中对业务代码的修改，我文章下面会给一个样例(毕竟不能带上公司业务代码)。我目前在酷家乐工作中有遇到以下两个之前处理起来代码比较繁琐的地方</p>
 <p>1、一个是大量的业务表从老的数据进行迁移(这里可能容易遇到自增主键切换写顺序一致性问题)，</p>
@@ -97,7 +308,20 @@
 <h4 id="2-老表如果是单表自增的，新表是分表的话"><a href="#2-老表如果是单表自增的，新表是分表的话" class="headerlink" title="(2) 老表如果是单表自增的，新表是分表的话"></a>(2) 老表如果是单表自增的，新表是分表的话</h4><p>老表自增id 增加一个大区间比如原来是 id = 10^7 我们直接增加到 id = 2 * 10 ^ 7 新表设置自增id为 10^7 + delta( delta &gt; 0 &amp;&amp; delta &lt; 10 ^ 4) 这个范围自己控制一下就好, 切换插入顺序以后主键不会冲突，也不会阻塞依赖业务方修改sql为rpc  迁移完成以后 新表主键改成 3 * 10 ^ 7, 这里只是大致数量, 实际区间大小由业务来决定<br>at</p>
 <h2 id="然后就是代码逻辑冗余问题了"><a href="#然后就是代码逻辑冗余问题了" class="headerlink" title="然后就是代码逻辑冗余问题了"></a>然后就是代码逻辑冗余问题了</h2><p>这里其实稍微涉及到一点mybatis的架构，通常业务里面我们的mybatis的mapper对象本质上是MapperProxy这个类，套了层jdk动态代理而已，对于需要垂直拆分数据迁移表相关的mapper，我这边直接自己实现了一个代理，绕过MapperProxy，直接通过 SqlSession 去执行，但是我还是会实现一个 mapper类的代理对象去替换掉业务代码里面用到的mapper对象，从而实现基本无侵入性, 迁移完了以后代码还是需要改一下包名啥的</p>
 <p>mybatis整体流程如下 tddl修改替换了　DataSource Connection 和 PrepareStatement 我的做法是替换掉MapperProxy</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">graph TD;</span><br><span class="line">MapperProxy--&gt;SqlSession;</span><br><span class="line">SqlSession--&gt;Executor;</span><br><span class="line">Executor--&gt;MappedStatement;</span><br><span class="line">Method--&gt;StatementId;</span><br><span class="line">StatementId--&gt;MappedStatement;</span><br><span class="line">MappedStatement--&gt;BoundedSql;</span><br><span class="line">BoundedSql--&gt;Sql;</span><br><span class="line">Method--&gt;MethodParameters;</span><br><span class="line">MethodParameters--&gt;Sql;</span><br><span class="line">Sql--&gt;PrepareStatement;</span><br><span class="line">DataSource--&gt;Connection;</span><br><span class="line">Connection--&gt;PrepareStatement;</span><br><span class="line">PrepareStatement--&gt;executeSql;</span><br></pre></td></tr></table></figure>
+<pre class="mermaid">graph TD;
+MapperProxy-->SqlSession;
+SqlSession-->Executor;
+Executor-->MappedStatement;
+Method-->StatementId;
+StatementId-->MappedStatement;
+MappedStatement-->BoundedSql;
+BoundedSql-->Sql;
+Method-->MethodParameters;
+MethodParameters-->Sql;
+Sql-->PrepareStatement;
+DataSource-->Connection;
+Connection-->PrepareStatement;
+PrepareStatement-->executeSql;</pre>
 
 
 <h4 id="改造如下-我这里以一个UserMapper为例"><a href="#改造如下-我这里以一个UserMapper为例" class="headerlink" title="改造如下 我这里以一个UserMapper为例"></a>改造如下 我这里以一个UserMapper为例</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@Primary</span><br><span class="line">@Bean</span><br><span class="line">public UserMapper delegateUserMapper(DbHandler dbHandler) &#123;</span><br><span class="line">    return (UserMapper) Proxy.newProxyInstance(UserMapper.class.getClassLoader(),</span><br><span class="line">            new Class&lt;?&gt;[]&#123; UserMapper.class &#125;, dbHandler);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -114,115 +338,193 @@
 
       
     </div>
-    <footer class="article-footer">
-      <a data-url="https://fanzhengchen.github.io/2020/01/19/db_trasnportation/" data-id="ck5l0k3u70000tjcz3nbf83pj" class="article-share-link">Share</a>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/19/db-transport/" rel="next" title="db_transport">
+                <i class="fa fa-chevron-left"></i> db_transport
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/01/19/db_transport/" rel="prev" title="db_transport">
+                db_transport <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
       
       
     </footer>
   </div>
   
-    
-<nav id="article-nav">
   
-    <a href="/2020/01/19/db_transport/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
         
-          db_transport
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">fanzhengchen</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据数据迁移其实主要就是垂直拆分和分库分表-垂直拆分和分库分表过程中主要数据库的操作就是双写和查询-我们会有开关来控制状态的转换，公司业务里orm主要是用mybatis"><span class="nav-number">1.</span> <span class="nav-text">数据数据迁移其实主要就是垂直拆分和分库分表 垂直拆分和分库分表过程中主要数据库的操作就是双写和查询 我们会有开关来控制状态的转换，公司业务里orm主要是用mybatis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#进行迁移的话会需要采用dts或者数据库日志binlog同步存量数据的过程，这里根据自己公司的技术栈来选择-存量数据写入数据库的时候带上主键"><span class="nav-number">1.0.1.</span> <span class="nav-text">进行迁移的话会需要采用dts或者数据库日志binlog同步存量数据的过程，这里根据自己公司的技术栈来选择 存量数据写入数据库的时候带上主键</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写增量数据"><span class="nav-number">1.1.</span> <span class="nav-text">写增量数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自增主键插入的问题"><span class="nav-number">1.2.</span> <span class="nav-text">自增主键插入的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-老表如果是单表自增的，新表是单表自增的话"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">(1) 老表如果是单表自增的，新表是单表自增的话</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-老表如果是单表自增的，新表是分表的话"><span class="nav-number">1.2.0.2.</span> <span class="nav-text">(2) 老表如果是单表自增的，新表是分表的话</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#然后就是代码逻辑冗余问题了"><span class="nav-number">1.3.</span> <span class="nav-text">然后就是代码逻辑冗余问题了</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#改造如下-我这里以一个UserMapper为例"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">改造如下 我这里以一个UserMapper为例</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
         
       </div>
-    </a>
-  
-  
-    <a href="/2020/01/19/db-transport/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">db_transport</div>
-    </a>
-  
-</nav>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fanzhengchen</span>
 
   
-</article>
-
-</section>
-        
-          <aside id="sidebar">
-  
-    
-
-  
-    
-
-  
-    
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li></ul>
-    </div>
-  </div>
+</div>
 
 
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2020/01/19/db_transport/">db_transport</a>
-          </li>
-        
-          <li>
-            <a href="/2020/01/19/db_trasnportation/">db_trasnportation</a>
-          </li>
-        
-          <li>
-            <a href="/2020/01/19/db-transport/">db_transport</a>
-          </li>
-        
-          <li>
-            <a href="/2020/01/19/hello-world/">Hello World</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2020 fanzhengchen<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
 
 
-  
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
 
-  
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
 
 
 
@@ -235,12 +537,167 @@
   </script>
 
 
-
-<script src="/js/script.js"></script>
-
+        
 
 
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
 
   </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
 </body>
 </html>
