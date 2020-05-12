@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="轮训(Polling)轮训流程如下 sequenceDiagram     participant client     participant server       client-&gt;&gt;server: request start      loop check         server-&gt;&gt;client: not finished         client-&gt;&gt;server: chec">
+<meta property="og:type" content="article">
+<meta property="og:title" content="轮询，长轮询，SSE, websocket四种通信机制">
+<meta property="og:url" content="https://fanzhengchen.github.io/2020/05/12/network_request/index.html">
+<meta property="og:site_name" content="MarkFan">
+<meta property="og:description" content="轮训(Polling)轮训流程如下 sequenceDiagram     participant client     participant server       client-&gt;&gt;server: request start      loop check         server-&gt;&gt;client: not finished         client-&gt;&gt;server: chec">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-12T03:19:00.000Z">
+<meta property="article:modified_time" content="2020-05-12T06:12:43.505Z">
+<meta property="article:author" content="fanzhengchen">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://fanzhengchen.github.io/2020/05/12/network_request/"/>
+
+
+
+
+
+  <title>轮询，长轮询，SSE, websocket四种通信机制 | MarkFan</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MarkFan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://fanzhengchen.github.io/2020/05/12/network_request/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fanzhengchen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MarkFan">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">轮询，长轮询，SSE, websocket四种通信机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-12T11:19:00+08:00">
+                2020-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="轮训-Polling"><a href="#轮训-Polling" class="headerlink" title="轮训(Polling)"></a>轮训(Polling)</h2><p>轮训流程如下</p>
+<pre class="mermaid">sequenceDiagram
+    participant client
+    participant server
+
+
+    client->>server: request start
+
+    loop check
+        server->>client: not finished
+        client->>server: check status
+    end
+
+    server->>client: response finished</pre>
+
+<p>客户端不断请求服务端, 服务端尽量马上回应并显示状态</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Thread thread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">for</span> (; ; ) &#123;</span><br><span class="line">                    String result = httpClient.get(url);</span><br><span class="line">                    <span class="keyword">long</span> time = System.currentTimeMillis();</span><br><span class="line">                    System.out.println(result + <span class="string">" "</span> + (++cnt) + <span class="string">" "</span> + time);</span><br><span class="line">                    <span class="comment">/**</span></span><br><span class="line"><span class="comment">                     * 间隔3s访问一次</span></span><br><span class="line"><span class="comment">                     */</span></span><br><span class="line">                    LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(<span class="number">3</span>));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">thread.start();</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="长轮训-long-polling"><a href="#长轮训-long-polling" class="headerlink" title="长轮训(long polling)"></a>长轮训(long polling)</h2><pre class="mermaid">sequenceDiagram
+    participant client
+    participant server
+
+    client->>server: request
+
+    loop check
+        server->>server: wait for task finished
+    end
+
+    server->>client: finished task</pre>
+
+<p>其实和轮训一样，但是这个时候有可能存在耗时任务或者数据消息尚未存在,　我们hold住这个链接并不释放，等待服务端返回</p>
+<p>server端核心代码 这里主要依赖 netty</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(PullRequest request, <span class="keyword">long</span> waitForMillis, TimeUnit timeUnit)</span> </span>&#123;</span><br><span class="line">       LockSupport.parkNanos(timeUnit.toNanos(waitForMillis));</span><br><span class="line">       <span class="keyword">if</span> (!isHttpRequest(request.getMessage())) &#123;</span><br><span class="line">           <span class="keyword">return</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       HttpRequest req = (HttpRequest) request.getMessage();</span><br><span class="line">       <span class="keyword">final</span> ChannelHandlerContext ctx = request.getCtx();</span><br><span class="line"></span><br><span class="line">       <span class="keyword">boolean</span> keepAlive = HttpUtil.isKeepAlive(req);</span><br><span class="line">       FullHttpResponse response = <span class="keyword">new</span> DefaultFullHttpResponse(</span><br><span class="line">               req.protocolVersion(), HttpResponseStatus.OK,</span><br><span class="line">               Unpooled.wrappedBuffer(CONTENT));</span><br><span class="line">       response.headers()</span><br><span class="line">               .set(CONTENT_TYPE, TEXT_PLAIN)</span><br><span class="line">               .setInt(CONTENT_LENGTH, response.content().readableBytes());</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> (keepAlive) &#123;</span><br><span class="line">           <span class="keyword">if</span> (!req.protocolVersion().isKeepAliveDefault()) &#123;</span><br><span class="line">               response.headers().set(CONNECTION, KEEP_ALIVE);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           <span class="comment">// Tell the client we're going to close the connection.</span></span><br><span class="line">           response.headers().set(CONNECTION, CLOSE);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       ChannelFuture f = ctx.writeAndFlush(response).addListener(<span class="keyword">new</span> ChannelFutureListener() &#123;</span><br><span class="line">           <span class="meta">@Override</span></span><br><span class="line">           <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operationComplete</span><span class="params">(<span class="keyword">final</span> ChannelFuture channelFuture)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">               <span class="keyword">if</span> (!channelFuture.isSuccess()) &#123;</span><br><span class="line">                   System.out.println(channelFuture.channel().remoteAddress() + <span class="string">" failed"</span>);</span><br><span class="line">               &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                   System.out.println(<span class="string">"success"</span>);</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;);</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> (!keepAlive) &#123;</span><br><span class="line">           f.addListener(ChannelFutureListener.CLOSE);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="sse-server-sent-event"><a href="#sse-server-sent-event" class="headerlink" title="sse(server-sent event)"></a>sse(server-sent event)</h2><pre class="mermaid">sequenceDiagram
+    participant client
+    participant server
+
+    client->>server: request
+
+    loop check
+        server->>client: task status update
+    end</pre>
+<p>sse其实就是一次http请求以后　服务端不断通过该次tcp连接不断向client端发送数据是单向数据流, 在spring里面, 我们已经有了SseEmitter, 不需要做很多额外工作就可以和前端交互</p>
+<h2 id="websocket-websocket-server"><a href="#websocket-websocket-server" class="headerlink" title="websocket(websocket-server)"></a>websocket(websocket-server)</h2><pre class="mermaid">sequenceDiagram
+    participant client
+    participant server
+
+    client->>server: http-request
+    server->>client: http-response handle-shake
+
+    loop check
+        client->>server: sent websocketFrame 发送消息
+        server->>client: receive websocketFrame 接受消息
+    end
+
+
+    loop check
+        client->>server: ping websocketFrame 心跳发送
+        server->>client: pong websocketFrame 回应心跳
+    end
+
+    client->>server: close</pre>
+
+<p>websocket第一次请求是一次get请求 然后进行协议升级upgrade为websocket<br>该协议为全双工协议，提供纯文本和二进制数据传输, 提供心跳检测的能力 PingWebsocketFrame和PongWebSocketFrame</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/28/debug_jvm/" rel="next" title="gdb 调试java虚拟机">
+                <i class="fa fa-chevron-left"></i> gdb 调试java虚拟机
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">fanzhengchen</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#轮训-Polling"><span class="nav-number">1.</span> <span class="nav-text">轮训(Polling)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#长轮训-long-polling"><span class="nav-number">2.</span> <span class="nav-text">长轮训(long polling)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sse-server-sent-event"><span class="nav-number">3.</span> <span class="nav-text">sse(server-sent event)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#websocket-websocket-server"><span class="nav-number">4.</span> <span class="nav-text">websocket(websocket-server)</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fanzhengchen</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+
+  <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'forest'});
+    }
+  </script>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
