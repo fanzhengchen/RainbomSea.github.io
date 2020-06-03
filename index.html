@@ -1344,14 +1344,14 @@ ContinueInNewThread0--pthread created and join-->JavaMain[java.c JavaMain]
 end</pre>
 
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> gdb /home/mark/jdk8u/build/linux-x86_64-normal-server-slowdebug/jdk/bin/java</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">set args -classpath /home/mark/jdk8u/build/linux-x86_64-normal-server-slowdebug/jdk/classes:/home/mark/DebugJava/target/classes com.qunhe.instdeco.Main</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">break java.c:378</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">run</span><br></pre></td></tr></table></figure>
-<h3 id="启动应用"><a href="#启动应用" class="headerlink" title="启动应用"></a>启动应用</h3><p><img src="/2020/04/28/debug_jvm/Screenshot-from-2020-04-09-20-51-23.png" alt="heap initialization"></p>
-<h3 id="堆初始化"><a href="#堆初始化" class="headerlink" title="堆初始化"></a>堆初始化</h3><p><img src="/2020/04/28/debug_jvm/Screenshot-from-2020-04-09-20-58-17.png" alt="堆初始化"></p>
-<h3 id="打印gc日志"><a href="#打印gc日志" class="headerlink" title="打印gc日志"></a>打印gc日志</h3><p><img src="/2020/04/28/debug_jvm/image2020-4-10_17-34-27.png" alt="print gc log"></p>
-<p><img src="/2020/04/28/debug_jvm/image2020-4-10_17-35-24.png" alt="gc log print"></p>
-<h3 id="Thread-sleep和LockSupport-park打断点看c-的栈帧"><a href="#Thread-sleep和LockSupport-park打断点看c-的栈帧" class="headerlink" title="Thread.sleep和LockSupport.park打断点看c++的栈帧"></a>Thread.sleep和LockSupport.park打断点看c++的栈帧</h3><p>Thread.sleep　对应的jni函数<br><img src="/2020/04/28/debug_jvm/image2020-4-10_17-40-14.png" alt="Thread sleep"></p>
-<h3 id="LockSupport-park-＝》-Unsafe-parkNanos-暂停线程-这个是juc并发包核心方法之一"><a href="#LockSupport-park-＝》-Unsafe-parkNanos-暂停线程-这个是juc并发包核心方法之一" class="headerlink" title="LockSupport.park ＝》　Unsafe.parkNanos  暂停线程 　这个是juc并发包核心方法之一"></a>LockSupport.park ＝》　Unsafe.parkNanos  暂停线程 　这个是juc并发包核心方法之一</h3><p><img src="/2020/04/28/debug_jvm/Screenshot-from-2020-04-10-17-49-40.png" alt="LockSupport"></p>
-<h1 id="gdb-attach-java-process"><a href="#gdb-attach-java-process" class="headerlink" title="gdb attach java process"></a>gdb attach java process</h1><p><img src="/2020/04/28/debug_jvm/image2020-4-10_17-54-52.png" alt="attach"></p>
-<p><img src="/2020/04/28/debug_jvm/image2020-4-10_20-52-53.png" alt="young gc"></p>
+<h3 id="启动应用"><a href="#启动应用" class="headerlink" title="启动应用"></a>启动应用</h3><p><img src="https://s1.ax1x.com/2020/06/03/tdgRN4.png" alt="launch"></p>
+<h3 id="堆初始化"><a href="#堆初始化" class="headerlink" title="堆初始化"></a>堆初始化</h3><p><img src="https://s1.ax1x.com/2020/06/03/tdgJnf.png" alt="堆初始化"></p>
+<h3 id="打印gc日志"><a href="#打印gc日志" class="headerlink" title="打印gc日志"></a>打印gc日志</h3><p><img src="https://s1.ax1x.com/2020/06/03/tdgjCd.png" alt="print gc log"></p>
+<p><img src="https://s1.ax1x.com/2020/06/03/tdcNWR.png" alt="gc log print"></p>
+<h3 id="Thread-sleep和LockSupport-park打断点看c-的栈帧"><a href="#Thread-sleep和LockSupport-park打断点看c-的栈帧" class="headerlink" title="Thread.sleep和LockSupport.park打断点看c++的栈帧"></a>Thread.sleep和LockSupport.park打断点看c++的栈帧</h3><p>Thread.sleep　对应的jni函数<br><img src="https://s1.ax1x.com/2020/06/03/tdcxmT.png" alt="Thread sleep"></p>
+<h3 id="LockSupport-park-＝》-Unsafe-parkNanos-暂停线程-这个是juc并发包核心方法之一"><a href="#LockSupport-park-＝》-Unsafe-parkNanos-暂停线程-这个是juc并发包核心方法之一" class="headerlink" title="LockSupport.park ＝》　Unsafe.parkNanos  暂停线程 　这个是juc并发包核心方法之一"></a>LockSupport.park ＝》　Unsafe.parkNanos  暂停线程 　这个是juc并发包核心方法之一</h3><p><img src="https://s1.ax1x.com/2020/06/03/tdcxmT.png" alt="LockSupport"></p>
+<h1 id="gdb-attach-java-process"><a href="#gdb-attach-java-process" class="headerlink" title="gdb attach java process"></a>gdb attach java process</h1><p><img src="https://s1.ax1x.com/2020/06/03/tdgm7D.png" alt="attach"></p>
+<p><img src="https://s1.ax1x.com/2020/06/03/td6TR1.png" alt="young gc"></p>
 
           
         
