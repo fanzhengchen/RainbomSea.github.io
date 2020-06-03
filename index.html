@@ -131,7 +131,7 @@
 
 
 
-<meta name="generator" content="Hexo 4.2.0"></head>
+</head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
@@ -215,6 +215,806 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://fanzhengchen.github.io/2020/05/20/thread_pool_exectuor_extension/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fanzhengchen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MarkFan">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/05/20/thread_pool_exectuor_extension/" itemprop="url">thread_pool_exectuor_extension</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-20T18:21:21+08:00">
+                2020-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <!DOCTYPE html>
+<html>
+<head>
+<title>thread_pool_exectuor_extension.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<p>目前的架构 大致流程</p>
+<pre><code class="language-mermaid"><div class="mermaid">graph TB;
+ProcessTaskExecutor-->getFutureData
+getFutureData-->ThreadTask
+RenderThreadPoolExecutor
+
+subgraph checkTimeOut
+getFutureData-->ProcessTaskList
+ProcessTaskList-->checkoutTimeout
+ProcessTaskList-->remove[remove timeout task]
+end
+
+subgraph execute
+ThreadTask-->RenderThreadPoolExecutor[RenderThreadPoolExecutor addThreadTask]
+RenderThreadPoolExecutor-->ThreadPoolExecutor[ThreadPoolExecutor submit task]
+end
+
+</div></code></pre>
+<h2 id="%E7%9B%AE%E5%89%8D%E4%B8%BB%E8%A6%81%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98">目前主要存在的问题</h2>
+<h3 id="1%E6%B2%A1%E6%9C%89%E9%80%82%E9%85%8D-exectuor%E6%8E%A5%E5%8F%A3">1、没有适配 exectuor接口</h3>
+<p>如果异步框架需要引入, 衔接起来并不友好</p>
+<p>比如 RxJava</p>
+<pre class="hljs"><code><div>   Flowable.just(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)
+                .observeOn(Schedulers.from(mExecutor))
+                .forEach(<span class="hljs-keyword">new</span> Consumer&lt;Integer&gt;() {
+                    <span class="hljs-meta">@Override</span>
+                    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">accept</span><span class="hljs-params">(<span class="hljs-keyword">final</span> Integer integer)</span> <span class="hljs-keyword">throws</span> Exception </span>{
+                        
+                    }
+                });
+</div></code></pre>
+<p>再比如 CompleteFuture</p>
+<pre class="hljs"><code><div>  CompletableFuture.runAsync(<span class="hljs-keyword">new</span> Runnable() {
+            <span class="hljs-meta">@Override</span>
+            <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+
+            }
+        }, mExecutor).thenApply(<span class="hljs-keyword">new</span> Function&lt;Void, Object&gt;() {
+            <span class="hljs-meta">@Override</span>
+            <span class="hljs-function"><span class="hljs-keyword">public</span> Object <span class="hljs-title">apply</span><span class="hljs-params">(<span class="hljs-keyword">final</span> Void aVoid)</span> </span>{
+                <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;
+            }
+        });
+</div></code></pre>
+<p>我们支持executor以后可以和这些api甚至第三方api无缝对接 同时也支持业务上的一些报警能力</p>
+<h3 id="2%E6%8F%90%E4%BE%9B%E5%AD%98%E5%82%A8%E5%92%8C%E6%89%A7%E8%A1%8C%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%80%A7%E8%83%BD%E9%97%AE%E9%A2%98">2、提供存储和执行的数据结构性能问题</h3>
+<p>目前采用的是 LinkedBlockingQueue
+jdk里面采用的策略是 通过 两把 ReetrantLock来控制 list的数据添加和删除</p>
+<pre class="hljs"><code><div> <span class="hljs-comment">/** Lock held by take, poll, etc */</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> ReentrantLock takeLock = <span class="hljs-keyword">new</span> ReentrantLock();
+
+    <span class="hljs-comment">/** Wait queue for waiting takes */</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Condition notEmpty = takeLock.newCondition();
+
+    <span class="hljs-comment">/** Lock held by put, offer, etc */</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> ReentrantLock putLock = <span class="hljs-keyword">new</span> ReentrantLock();
+</div></code></pre>
+<p>具体细节不展开了, 线程比较多的时候一个问题是锁粒度大, 对于io密集型应用这个时候采用乐观锁可能可以获得更好的性能, java里面 Thread.sleep() LockSuppar.park() Object.wait() 这些操作最终都会追溯到 hotspot vm里面 pthread_cond_wait这个函数, 总之是大概率让出cpu执行时间片, 切换cpu三级缓存行以及相应寄存器变量从而带来较大开销</p>
+<h2 id="%E6%94%B9%E8%BF%9B%E5%90%8E%E7%9A%84%E6%9E%B6%E6%9E%84%E5%A6%82%E4%B8%8B">改进后的架构如下</h2>
+<h3 id="%E7%AC%AC%E4%B8%80%E7%A7%8D">第一种</h3>
+<pre><code class="language-mermaid"><div class="mermaid">graph TB;
+Runnable[Runnable　我们的任务都封装为 runnable]-->Executor
+Executor-->Queue[Queue 线程安全队列 会提供多种实现和自定义实现]
+Queue-->Thread[Thread的 run方法里循环执行]
+</div></code></pre>
+<h3 id="%E7%AC%AC%E4%BA%8C%E7%A7%8D-queue%E5%8F%AF%E4%BB%A5%E5%92%8C-thread%E7%BB%91%E5%AE%9A">第二种 queue可以和 thread绑定</h3>
+<p>queue在这里可以无锁化</p>
+<pre><code class="language-mermaid"><div class="mermaid">graph TB;
+Runnable[Runnable　我们的任务都封装为 runnable]-->Executor
+Executor-->Queue1[Queue1 线程安全队列 会提供多种实现和自定义实现]
+Executor-->Queue2[Queue2 线程安全队列 会提供多种实现和自定义实现]
+Executor-->Queue3[Queue3 线程安全队列 会提供多种实现和自定义实现]
+Queue1-->Thread1[Thread的 run方法里循环执行]
+Queue2-->Thread2[Thread的 run方法里循环执行]
+Queue3-->Thread3[Thread的 run方法里循环执行]
+</div></code></pre>
+<p>一个最简单的线程池示例本质上就是</p>
+<pre class="hljs"><code><div>        Queue&lt;Runnable&gt; queue = ...;
+        Thread thread = <span class="hljs-keyword">new</span> Thread(<span class="hljs-keyword">new</span> Runnable() {
+            <span class="hljs-meta">@Override</span>
+            <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+                <span class="hljs-keyword">while</span> (<span class="hljs-keyword">true</span>) {
+                    <span class="hljs-comment">/**
+                     * do something
+                     */</span>
+                    Runnable runnable = queue.poll();
+                    <span class="hljs-keyword">if</span>(runnable != <span class="hljs-keyword">null</span>) {
+                        runnable.run();
+                    } <span class="hljs-keyword">else</span> {
+                        <span class="hljs-comment">// 暂停线程</span>
+                        LockSupport.park();
+                    }
+                }
+            }
+        });
+        thread.start();
+        Runnable runnable = <span class="hljs-keyword">new</span> Runnable() {
+            <span class="hljs-meta">@Override</span>
+            <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+                
+            }
+        };
+        <span class="hljs-comment">//加入成功　判断下 状态唤醒与之绑定的线程</span>
+        <span class="hljs-keyword">if</span>(queue.offer(runnable)){
+              <span class="hljs-keyword">if</span> (thread.getState() == Thread.State.BLOCKED ||
+                    thread.getState() == Thread.State.WAITING ||
+                    thread.getState() == Thread.State.TIMED_WAITING) {
+                LockSupport.unpark(thread);
+            }
+        }
+</div></code></pre>
+<h2 id="queue%E7%9A%84%E5%AE%9E%E7%8E%B0">queue的实现</h2>
+<h3 id="1%E4%BC%A0%E7%BB%9F%E7%9A%84-linkedblockingqueue">1、传统的 LinkedBlockingQueue</h3>
+<p>具体不多说了, 面试题都能搜到一堆</p>
+<h3 id="2non-blockingqueue">2、non-blockingqueue</h3>
+<p>MpscArrayQueue jctools和netty里均有实现
+多生产者单消费者 因为单线程消费所以消费者index可以完全无锁化</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">abstract</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MpscArrayQueueL3Pad</span>&lt;<span class="hljs-title">E</span>&gt; <span class="hljs-keyword">extends</span> <span class="hljs-title">MpscArrayQueueConsumerIndexField</span>&lt;<span class="hljs-title">E</span>&gt;
+</span>{
+    <span class="hljs-keyword">long</span> p01, p02, p03, p04, p05, p06, p07;
+    <span class="hljs-keyword">long</span> p10, p11, p12, p13, p14, p15, p16, p17;
+</div></code></pre>
+<p>维护消费者和生产者下标，对于多线程情况采用缓存行填充避免伪共享问题
+减少cpu cache-line额外开销, 这个方案属于对性能比较高的一种解决方案</p>
+<h2 id="executor%E7%9A%84%E7%AD%96%E7%95%A5">executor的策略</h2>
+<p>目前我个人倾向于提供多种方案</p>
+<h3 id="1%E8%80%81%E7%9A%84jdk%E6%8F%90%E4%BE%9B%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%B1%A0-%E6%9C%AC%E8%B4%A8%E4%B8%8A%E6%98%AF%E4%B8%AAexecutor">1、老的jdk提供的线程池, 本质上是个executor</h3>
+<h3 id="2%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AF%B9%E5%BA%94%E4%B8%80%E4%B8%AAqueue-queue%E5%8F%AF%E4%BB%A5%E9%80%89%E6%8B%A9-blockingqueue%E6%88%96%E8%80%85%E5%85%B6%E4%BB%96%E7%9A%84%E9%AB%98%E6%80%A7%E8%83%BD%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">2、多线程对应一个queue, queue可以选择 blockingqueue或者其他的高性能解决方案</h3>
+<h3 id="3eventloop-%E6%AF%8F%E4%B8%AA%E7%BA%BF%E7%A8%8B%E7%BB%91%E5%AE%9A%E4%B8%80%E4%B8%AAqueue-queue%E7%9A%84%E9%80%89%E6%8B%A9%E6%96%B9%E6%A1%88%E5%A6%82%E4%B8%8A-%E6%9C%89%E9%94%81%E5%BC%80%E9%94%80%E7%9A%84%E5%9C%B0%E6%96%B9%E5%9C%A8%E4%BA%8Erunnable%E5%88%86%E9%85%8D%E8%BF%99%E4%B8%AA%E5%9C%B0%E6%96%B9%E4%BC%9A%E6%9C%89%E4%B8%80%E4%B8%AAcas%E9%94%81%E8%AF%BB%E5%86%99%E6%AF%94%E4%BE%8B%E5%9D%87%E7%AD%89-atomicinteger%E5%B0%B1%E5%A4%9F%E4%BA%86-queue%E7%9A%84%E5%86%99%E5%85%A5%E9%9C%80%E8%A6%81%E6%94%AF%E6%8C%81%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8-%E9%80%9A%E8%BF%87cas%E5%92%8C%E7%BC%93%E5%AD%98%E8%A1%8C%E5%A1%AB%E5%85%85%E6%8F%90%E9%AB%98%E8%AF%BB%E5%86%99%E6%80%A7%E8%83%BD-%E7%A9%BA%E9%97%B4%E6%8D%A2%E6%97%B6%E9%97%B4">3、EventLoop, 每个线程绑定一个queue, queue的选择方案如上, 有锁开销的地方在于runnable分配，这个地方会有一个cas锁，读写比例均等 atomicInteger就够了, queue的写入需要支持线程安全, 通过cas和缓存行填充提高读写性能, 空间换时间</h3>
+<h2 id="%E9%A2%9D%E5%A4%96%E5%B7%A5%E4%BD%9C">额外工作</h2>
+<h3 id="1runnable%E6%89%A7%E8%A1%8C%E6%97%B6%E9%97%B4%E7%BB%9F%E8%AE%A1">1、runnable执行时间统计</h3>
+<h3 id="2%E9%A2%9D%E5%A4%96%E7%9A%84%E4%B8%80%E4%B8%AAthread%E6%94%AF%E6%8C%81%E6%A3%80%E6%B5%8B%E8%B6%85%E6%97%B6%E4%BB%BB%E5%8A%A1">2、额外的一个thread支持检测超时任务</h3>
+<h3 id="3%E6%8A%A5%E8%AD%A6%E7%B3%BB%E5%88%97%E4%BB%A3%E7%A0%81%E8%BF%99%E9%83%A8%E5%88%86%E5%BA%94%E5%BD%93%E7%9B%B4%E6%8E%A5copy%E7%9B%AE%E5%89%8D%E7%9A%84%E4%BB%A3%E7%A0%81%E5%8D%B3%E5%8F%AF">3、报警系列代码，这部分应当直接copy目前的代码即可</h3>
+
+</body>
+</html>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://fanzhengchen.github.io/2020/05/20/thread_pool_exectuor_extension/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fanzhengchen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MarkFan">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/05/20/thread_pool_exectuor_extension/" itemprop="url">业务线程池架构改进</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-20T15:00:00+08:00">
+                2020-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>目前的架构 大致流程</p>
+<pre class="mermaid">graph TB;
+ProcessTaskExecutor-->getFutureData
+getFutureData-->ThreadTask
+RenderThreadPoolExecutor
+
+subgraph checkTimeOut
+getFutureData-->ProcessTaskList
+ProcessTaskList-->checkoutTimeout
+ProcessTaskList-->remove[remove timeout task]
+end
+
+subgraph execute
+ThreadTask-->RenderThreadPoolExecutor[RenderThreadPoolExecutor addThreadTask]
+RenderThreadPoolExecutor-->ThreadPoolExecutor[ThreadPoolExecutor submit task]
+end</pre>
+
+<h2 id="目前主要存在的问题"><a href="#目前主要存在的问题" class="headerlink" title="目前主要存在的问题"></a>目前主要存在的问题</h2><h3 id="1、没有适配-exectuor接口"><a href="#1、没有适配-exectuor接口" class="headerlink" title="1、没有适配 exectuor接口"></a>1、没有适配 exectuor接口</h3><p>如果异步框架需要引入, 衔接起来并不友好</p>
+<p>比如 RxJava</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Flowable.just(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">             .observeOn(Schedulers.from(mExecutor))</span><br><span class="line">             .forEach(<span class="keyword">new</span> Consumer&lt;Integer&gt;() &#123;</span><br><span class="line">                 <span class="meta">@Override</span></span><br><span class="line">                 <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">accept</span><span class="params">(<span class="keyword">final</span> Integer integer)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                     </span><br><span class="line">                 &#125;</span><br><span class="line">             &#125;);</span><br></pre></td></tr></table></figure>
+<p>再比如 CompleteFuture</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">CompletableFuture.runAsync(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">          <span class="meta">@Override</span></span><br><span class="line">          <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">          &#125;</span><br><span class="line">      &#125;, mExecutor).thenApply(<span class="keyword">new</span> Function&lt;Void, Object&gt;() &#123;</span><br><span class="line">          <span class="meta">@Override</span></span><br><span class="line">          <span class="function"><span class="keyword">public</span> Object <span class="title">apply</span><span class="params">(<span class="keyword">final</span> Void aVoid)</span> </span>&#123;</span><br><span class="line">              <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;);</span><br></pre></td></tr></table></figure>
+<p>我们支持executor以后可以和这些api甚至第三方api无缝对接 同时也支持业务上的一些报警能力</p>
+<h3 id="2、提供存储和执行的数据结构性能问题"><a href="#2、提供存储和执行的数据结构性能问题" class="headerlink" title="2、提供存储和执行的数据结构性能问题"></a>2、提供存储和执行的数据结构性能问题</h3><p>目前采用的是 LinkedBlockingQueue<br>jdk里面采用的策略是 通过 两把 ReetrantLock来控制 list的数据添加和删除</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** Lock held by take, poll, etc */</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock takeLock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"></span><br><span class="line">   <span class="comment">/** Wait queue for waiting takes */</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">final</span> Condition notEmpty = takeLock.newCondition();</span><br><span class="line"></span><br><span class="line">   <span class="comment">/** Lock held by put, offer, etc */</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock putLock = <span class="keyword">new</span> ReentrantLock();</span><br></pre></td></tr></table></figure>
+<p>具体细节不展开了, 线程比较多的时候一个问题是锁粒度大, 对于io密集型应用这个时候采用乐观锁可能可以获得更好的性能, java里面 Thread.sleep() LockSuppar.park() Object.wait() 这些操作最终都会追溯到 hotspot vm里面 pthread_cond_wait这个函数, 总之是大概率让出cpu执行时间片, 切换cpu三级缓存行以及相应寄存器变量从而带来较大开销</p>
+<h2 id="改进后的架构如下"><a href="#改进后的架构如下" class="headerlink" title="改进后的架构如下"></a>改进后的架构如下</h2><h3 id="第一种"><a href="#第一种" class="headerlink" title="第一种"></a>第一种</h3><pre class="mermaid">graph TB;
+Runnable[Runnable　我们的任务都封装为 runnable]-->Executor
+Executor-->Queue[Queue 线程安全队列 会提供多种实现和自定义实现]
+Queue-->Thread[Thread的 run方法里循环执行]</pre>
+
+<h3 id="第二种-queue可以和-thread绑定"><a href="#第二种-queue可以和-thread绑定" class="headerlink" title="第二种 queue可以和 thread绑定"></a>第二种 queue可以和 thread绑定</h3><p>queue在这里可以无锁化</p>
+<pre class="mermaid">graph TB;
+Runnable[Runnable　我们的任务都封装为 runnable]-->Executor
+Executor-->Queue1[Queue1 线程安全队列 会提供多种实现和自定义实现]
+Executor-->Queue2[Queue2 线程安全队列 会提供多种实现和自定义实现]
+Executor-->Queue3[Queue3 线程安全队列 会提供多种实现和自定义实现]
+
+
+subgraph eventLoop1
+  Queue1-->Thread1[Thread的 run方法里循环执行]
+end
+subgraph eventLoop2
+  Queue2-->Thread2[Thread的 run方法里循环执行]
+end
+subgraph eventLoop3
+  Queue3-->Thread3[Thread的 run方法里循环执行]
+end</pre>
+
+<p>一个最简单的线程池示例本质上就是</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">Queue&lt;Runnable&gt; queue = ...;</span><br><span class="line">Thread thread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * do something</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">            Runnable runnable = queue.poll();</span><br><span class="line">            <span class="keyword">if</span>(runnable != <span class="keyword">null</span>) &#123;</span><br><span class="line">                runnable.run();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 暂停线程</span></span><br><span class="line">                LockSupport.park();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">thread.start();</span><br><span class="line">Runnable runnable = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//加入成功　判断下 状态唤醒与之绑定的线程</span></span><br><span class="line"><span class="keyword">if</span>(queue.offer(runnable))&#123;</span><br><span class="line">      <span class="keyword">if</span> (thread.getState() == Thread.State.BLOCKED ||</span><br><span class="line">            thread.getState() == Thread.State.WAITING ||</span><br><span class="line">            thread.getState() == Thread.State.TIMED_WAITING) &#123;</span><br><span class="line">        LockSupport.unpark(thread);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="queue的实现"><a href="#queue的实现" class="headerlink" title="queue的实现"></a>queue的实现</h2><h3 id="1、传统的-LinkedBlockingQueue"><a href="#1、传统的-LinkedBlockingQueue" class="headerlink" title="1、传统的 LinkedBlockingQueue"></a>1、传统的 LinkedBlockingQueue</h3><p>具体不多说了, 面试题都能搜到一堆</p>
+<h3 id="2、non-blockingqueue"><a href="#2、non-blockingqueue" class="headerlink" title="2、non-blockingqueue"></a>2、non-blockingqueue</h3><p>MpscArrayQueue jctools和netty里均有实现<br>多生产者单消费者 因为单线程消费所以消费者index可以完全无锁化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">MpscArrayQueueL3Pad</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">MpscArrayQueueConsumerIndexField</span>&lt;<span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">long</span> p01, p02, p03, p04, p05, p06, p07;</span><br><span class="line">    <span class="keyword">long</span> p10, p11, p12, p13, p14, p15, p16, p17;</span><br></pre></td></tr></table></figure>
+
+<p>维护消费者和生产者下标，对于多线程情况采用缓存行填充避免伪共享问题<br>减少cpu cache-line额外开销, 这个方案属于对性能比较高的一种解决方案</p>
+<h2 id="executor的策略"><a href="#executor的策略" class="headerlink" title="executor的策略"></a>executor的策略</h2><p>目前我个人倾向于提供多种方案</p>
+<h3 id="1、老的jdk提供的线程池-本质上是个executor"><a href="#1、老的jdk提供的线程池-本质上是个executor" class="headerlink" title="1、老的jdk提供的线程池, 本质上是个executor"></a>1、老的jdk提供的线程池, 本质上是个executor</h3><h3 id="2、多线程对应一个queue-queue可以选择-blockingqueue或者其他的高性能解决方案"><a href="#2、多线程对应一个queue-queue可以选择-blockingqueue或者其他的高性能解决方案" class="headerlink" title="2、多线程对应一个queue, queue可以选择 blockingqueue或者其他的高性能解决方案"></a>2、多线程对应一个queue, queue可以选择 blockingqueue或者其他的高性能解决方案</h3><h3 id="3、EventLoop-每个线程绑定一个queue-queue的选择方案如上-有锁开销的地方在于runnable分配，这个地方会有一个cas锁，读写比例均等-atomicInteger就够了-queue的写入需要支持线程安全-通过cas和缓存行填充提高读写性能-空间换时间"><a href="#3、EventLoop-每个线程绑定一个queue-queue的选择方案如上-有锁开销的地方在于runnable分配，这个地方会有一个cas锁，读写比例均等-atomicInteger就够了-queue的写入需要支持线程安全-通过cas和缓存行填充提高读写性能-空间换时间" class="headerlink" title="3、EventLoop, 每个线程绑定一个queue, queue的选择方案如上, 有锁开销的地方在于runnable分配，这个地方会有一个cas锁，读写比例均等 atomicInteger就够了, queue的写入需要支持线程安全, 通过cas和缓存行填充提高读写性能, 空间换时间"></a>3、EventLoop, 每个线程绑定一个queue, queue的选择方案如上, 有锁开销的地方在于runnable分配，这个地方会有一个cas锁，读写比例均等 atomicInteger就够了, queue的写入需要支持线程安全, 通过cas和缓存行填充提高读写性能, 空间换时间</h3><h2 id="额外工作"><a href="#额外工作" class="headerlink" title="额外工作"></a>额外工作</h2><h3 id="1、runnable执行时间统计"><a href="#1、runnable执行时间统计" class="headerlink" title="1、runnable执行时间统计"></a>1、runnable执行时间统计</h3><h3 id="2、额外的一个thread支持检测超时任务"><a href="#2、额外的一个thread支持检测超时任务" class="headerlink" title="2、额外的一个thread支持检测超时任务"></a>2、额外的一个thread支持检测超时任务</h3><h3 id="3、报警系列代码，这部分应当直接copy目前的代码即可"><a href="#3、报警系列代码，这部分应当直接copy目前的代码即可" class="headerlink" title="3、报警系列代码，这部分应当直接copy目前的代码即可"></a>3、报警系列代码，这部分应当直接copy目前的代码即可</h3>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -505,7 +1305,54 @@
       
         
           
-            <h1 id="下载-jdk8u-source-code-我这里只考虑linux平台"><a href="#下载-jdk8u-source-code-我这里只考虑linux平台" class="headerlink" title="下载 jdk8u source code 我这里只考虑linux平台"></a>下载 jdk8u source code 我这里只考虑linux平台</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+            <h1 id="下载-jdk8u-source-code-我这里只考虑linux平台"><a href="#下载-jdk8u-source-code-我这里只考虑linux平台" class="headerlink" title="下载 jdk8u source code 我这里只考虑linux平台"></a>下载 jdk8u source code 我这里只考虑linux平台</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hg clone http://hg.openjdk.java.net/jdk8u/jdk8u/</span><br><span class="line">sh get_source.sh</span><br></pre></td></tr></table></figure>
+
+<h1 id="编译构建"><a href="#编译构建" class="headerlink" title="编译构建"></a>编译构建</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">rm -rf ./build/</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">bash configure \</span><br><span class="line">	     --with-debug-level=slowdebug \</span><br><span class="line">	     --with-native-debug-symbols=internal \</span><br><span class="line">	     --with-boot-jdk=/usr/lib/jvm/java-8-oracle/</span><br><span class="line"></span><br><span class="line">make all</span><br></pre></td></tr></table></figure>
+
+<h1 id="java命令启动应用程序"><a href="#java命令启动应用程序" class="headerlink" title="java命令启动应用程序"></a>java命令启动应用程序</h1><h3 id="java-classpath裸奔"><a href="#java-classpath裸奔" class="headerlink" title="java + classpath裸奔"></a>java + classpath裸奔</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;home&#x2F;mark&#x2F;jdk8u&#x2F;build&#x2F;linux-x86_64-server-slowdebug&#x2F;jdk&#x2F;bin&#x2F;java   </span><br><span class="line">    -classpath &#x2F;home&#x2F;mark&#x2F;RenderGroup&#x2F;test&#x2F;out&#x2F;production&#x2F;test com.qunhe.instdeco.Main</span><br></pre></td></tr></table></figure>
+
+<h3 id="maven启动"><a href="#maven启动" class="headerlink" title="maven启动"></a>maven启动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;home&#x2F;mark&#x2F;jdk8u&#x2F;build&#x2F;linux-x86_64-normal-server-slowdebug&#x2F;jdk&#x2F;bin&#x2F;java \</span><br><span class="line">  -Dmaven.multiModuleProjectDirectory&#x3D;&#x2F;home&#x2F;mark&#x2F;app&#x2F;app-server \</span><br><span class="line">  -Dmaven.home&#x3D;&#x2F;home&#x2F;mark&#x2F;idea-IU-182.4129.33&#x2F;plugins&#x2F;maven&#x2F;lib&#x2F;maven3 -Dclassworlds.conf&#x3D;&#x2F;home&#x2F;mark&#x2F;idea-IU-182.4129.33&#x2F;plugins&#x2F;maven&#x2F;lib&#x2F;maven3&#x2F;bin&#x2F;m2.conf \</span><br><span class="line">  -Dmaven.ext.class.path&#x3D;&#x2F;home&#x2F;mark&#x2F;idea-IU-182.4129.33&#x2F;plugins&#x2F;maven&#x2F;lib&#x2F;maven-event-listener.jar \</span><br><span class="line">  -Dfile.encoding&#x3D;UTF-8 -classpath &#x2F;home&#x2F;mark&#x2F;idea-IU-182.4129.33&#x2F;plugins&#x2F;maven&#x2F;lib&#x2F;maven3&#x2F;boot&#x2F;plexus-classworlds-2.6.0.jar \</span><br><span class="line">  org.codehaus.classworlds.Launcher -Didea.version2019.3.4 \</span><br><span class="line">  clean jetty:run \</span><br><span class="line">  -Djetty.port&#x3D;20000 \</span><br><span class="line">  -Dspring.profiles.active&#x3D;dev \</span><br><span class="line">  -f &#x2F;home&#x2F;mark&#x2F;app&#x2F;app-server</span><br></pre></td></tr></table></figure>
+<h1 id="gdb调试"><a href="#gdb调试" class="headerlink" title="gdb调试"></a>gdb调试</h1><h3 id="虚拟机初始化"><a href="#虚拟机初始化" class="headerlink" title="虚拟机初始化"></a>虚拟机初始化</h3><pre class="mermaid">graph TB;
+main.c[main.c]-->JLI_Launch[java.c JLI_Launch]
+JLI_Launch-->CreateExecutionEnvironment[java_md_solinux.c CreateExecutionEnvironment]
+JLI_Launch-->LoadJavaVM[java_md_solinux.c LoadJavaVM]
+
+
+JLI_Launch-->JVMInit[java_md_solinux.c JVMInit]
+
+
+subgraph LoadJavaVm
+LoadJavaVM-->InnocationFunction[load JNI_CreateJavaVM function]
+InnocationFunction-->JNI_CreateJavaVM[JNI_CreateJavaVM jni.cpp]
+JNI_CreateJavaVM-->create_vm[Thread::create_vm Thread.cpp]
+create_vm-->init_globals[init_globals init.cpp]
+init_globals-->universe_init[universe_init universe.cpp]
+universe_init-->Universe::initialize_heap[Universe::initialize_heap universe.cpp]
+Universe::initialize_heap-->G1CollectedHeap::initialize[G1CollectedHeap::initialize g1CollectedHeap.cpp]
+G1CollectedHeap::initialize-->ConcurrentMark::ConcurrentMark[ConcurrentMark::ConcurrentMark ConcurrentMark.cpp]
+ConcurrentMark::ConcurrentMark-->ConcurrentMarkThread[ConcurrentMarkThread ConcurrentMarkThread.cpp]
+ConcurrentMarkThread-->ConcurrentGCThread[ConcurrentGCThread.cpp]
+ConcurrentGCThread-->ConcurrentGCThread::create_and_start[create_and_start ConcurrentGCThread.cpp]
+G1CollectedHeap::initialize-->ConcurrentG1Refine::ConcurrentG1Refine[ConcurrentG1Refine::ConcurrentG1Refine concurrentG1Refine.cpp]
+ConcurrentG1Refine::ConcurrentG1Refine-->ConcurrentG1RefineThread
+end
+
+subgraph JavaMainLaunch
+JVMInit-->ContinueInNewThread[java.c  ContinueInNewThread]
+ContinueInNewThread-->ContinueInNewThread0[java_md_solinux.c ContinueInNewThread0]
+ContinueInNewThread0--pthread created and join-->JavaMain[java.c JavaMain]
+end</pre>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> gdb /home/mark/jdk8u/build/linux-x86_64-normal-server-slowdebug/jdk/bin/java</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">set args -classpath /home/mark/jdk8u/build/linux-x86_64-normal-server-slowdebug/jdk/classes:/home/mark/DebugJava/target/classes com.qunhe.instdeco.Main</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">break java.c:378</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+<h3 id="启动应用"><a href="#启动应用" class="headerlink" title="启动应用"></a>启动应用</h3><p><img src="Screenshot-from-2020-04-09-20-51-23.png" alt="heap initialization"></p>
+<h3 id="堆初始化"><a href="#堆初始化" class="headerlink" title="堆初始化"></a>堆初始化</h3><p><img src="Screenshot-from-2020-04-09-20-58-17.png" alt="堆初始化"></p>
+<h3 id="打印gc日志"><a href="#打印gc日志" class="headerlink" title="打印gc日志"></a>打印gc日志</h3><p><img src="image2020-4-10_17-34-27.png" alt="print gc log"></p>
+<p><img src="image2020-4-10_17-35-24.png" alt="gc log print"></p>
+<h3 id="Thread-sleep和LockSupport-park打断点看c-的栈帧"><a href="#Thread-sleep和LockSupport-park打断点看c-的栈帧" class="headerlink" title="Thread.sleep和LockSupport.park打断点看c++的栈帧"></a>Thread.sleep和LockSupport.park打断点看c++的栈帧</h3><p>Thread.sleep　对应的jni函数<br><img src="image2020-4-10_17-40-14.png" alt="Thread sleep"></p>
+<h3 id="LockSupport-park-＝》-Unsafe-parkNanos-暂停线程-这个是juc并发包核心方法之一"><a href="#LockSupport-park-＝》-Unsafe-parkNanos-暂停线程-这个是juc并发包核心方法之一" class="headerlink" title="LockSupport.park ＝》　Unsafe.parkNanos  暂停线程 　这个是juc并发包核心方法之一"></a>LockSupport.park ＝》　Unsafe.parkNanos  暂停线程 　这个是juc并发包核心方法之一</h3><p><img src="Screenshot-from-2020-04-10-17-49-40.png" alt="LockSupport"></p>
+<h1 id="gdb-attach-java-process"><a href="#gdb-attach-java-process" class="headerlink" title="gdb attach java process"></a>gdb attach java process</h1><p><img src="image2020-4-10_17-54-52.png" alt="attach"></p>
+<p><img src="image2020-4-10_20-52-53.png" alt="young gc"></p>
+
           
         
       
@@ -1129,7 +1976,7 @@ MappedStatement-->SqlType;</pre>
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>

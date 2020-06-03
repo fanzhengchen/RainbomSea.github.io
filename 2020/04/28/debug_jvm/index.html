@@ -79,17 +79,26 @@
 
 
 
-<meta name="description" content="下载 jdk8u source code 我这里只考虑linux平台12">
+<meta name="description" content="下载 jdk8u source code 我这里只考虑linux平台12hg clone http:&#x2F;&#x2F;hg.openjdk.java.net&#x2F;jdk8u&#x2F;jdk8u&#x2F;sh get_source.sh  编译构建12345678910rm -rf .&#x2F;build&#x2F;bash configure \	     --with-debug-level&#x3D;slowdebug \	     --with-nat">
 <meta property="og:type" content="article">
 <meta property="og:title" content="gdb 调试java虚拟机">
 <meta property="og:url" content="https://fanzhengchen.github.io/2020/04/28/debug_jvm/index.html">
 <meta property="og:site_name" content="MarkFan">
-<meta property="og:description" content="下载 jdk8u source code 我这里只考虑linux平台12">
+<meta property="og:description" content="下载 jdk8u source code 我这里只考虑linux平台12hg clone http:&#x2F;&#x2F;hg.openjdk.java.net&#x2F;jdk8u&#x2F;jdk8u&#x2F;sh get_source.sh  编译构建12345678910rm -rf .&#x2F;build&#x2F;bash configure \	     --with-debug-level&#x3D;slowdebug \	     --with-nat">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fanzhengchen.github.io/2020/04/28/debug_jvm/Screenshot-from-2020-04-09-20-51-23.png">
+<meta property="og:image" content="https://fanzhengchen.github.io/2020/04/28/debug_jvm/Screenshot-from-2020-04-09-20-58-17.png">
+<meta property="og:image" content="https://fanzhengchen.github.io/2020/04/28/debug_jvm/image2020-4-10_17-34-27.png">
+<meta property="og:image" content="https://fanzhengchen.github.io/2020/04/28/debug_jvm/image2020-4-10_17-35-24.png">
+<meta property="og:image" content="https://fanzhengchen.github.io/2020/04/28/debug_jvm/image2020-4-10_17-40-14.png">
+<meta property="og:image" content="https://fanzhengchen.github.io/2020/04/28/debug_jvm/Screenshot-from-2020-04-10-17-49-40.png">
+<meta property="og:image" content="https://fanzhengchen.github.io/2020/04/28/debug_jvm/image2020-4-10_17-54-52.png">
+<meta property="og:image" content="https://fanzhengchen.github.io/2020/04/28/debug_jvm/image2020-4-10_20-52-53.png">
 <meta property="article:published_time" content="2020-04-28T12:44:01.000Z">
-<meta property="article:modified_time" content="2020-04-29T03:33:22.983Z">
+<meta property="article:modified_time" content="2020-06-03T11:53:22.608Z">
 <meta property="article:author" content="fanzhengchen">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fanzhengchen.github.io/2020/04/28/debug_jvm/Screenshot-from-2020-04-09-20-51-23.png">
 
 
 
@@ -299,7 +308,54 @@
       
 
       
-        <h1 id="下载-jdk8u-source-code-我这里只考虑linux平台"><a href="#下载-jdk8u-source-code-我这里只考虑linux平台" class="headerlink" title="下载 jdk8u source code 我这里只考虑linux平台"></a>下载 jdk8u source code 我这里只考虑linux平台</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+        <h1 id="下载-jdk8u-source-code-我这里只考虑linux平台"><a href="#下载-jdk8u-source-code-我这里只考虑linux平台" class="headerlink" title="下载 jdk8u source code 我这里只考虑linux平台"></a>下载 jdk8u source code 我这里只考虑linux平台</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hg clone http://hg.openjdk.java.net/jdk8u/jdk8u/</span><br><span class="line">sh get_source.sh</span><br></pre></td></tr></table></figure>
+
+<h1 id="编译构建"><a href="#编译构建" class="headerlink" title="编译构建"></a>编译构建</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">rm -rf ./build/</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">bash configure \</span><br><span class="line">	     --with-debug-level=slowdebug \</span><br><span class="line">	     --with-native-debug-symbols=internal \</span><br><span class="line">	     --with-boot-jdk=/usr/lib/jvm/java-8-oracle/</span><br><span class="line"></span><br><span class="line">make all</span><br></pre></td></tr></table></figure>
+
+<h1 id="java命令启动应用程序"><a href="#java命令启动应用程序" class="headerlink" title="java命令启动应用程序"></a>java命令启动应用程序</h1><h3 id="java-classpath裸奔"><a href="#java-classpath裸奔" class="headerlink" title="java + classpath裸奔"></a>java + classpath裸奔</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;home&#x2F;mark&#x2F;jdk8u&#x2F;build&#x2F;linux-x86_64-server-slowdebug&#x2F;jdk&#x2F;bin&#x2F;java   </span><br><span class="line">    -classpath &#x2F;home&#x2F;mark&#x2F;RenderGroup&#x2F;test&#x2F;out&#x2F;production&#x2F;test com.qunhe.instdeco.Main</span><br></pre></td></tr></table></figure>
+
+<h3 id="maven启动"><a href="#maven启动" class="headerlink" title="maven启动"></a>maven启动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;home&#x2F;mark&#x2F;jdk8u&#x2F;build&#x2F;linux-x86_64-normal-server-slowdebug&#x2F;jdk&#x2F;bin&#x2F;java \</span><br><span class="line">  -Dmaven.multiModuleProjectDirectory&#x3D;&#x2F;home&#x2F;mark&#x2F;app&#x2F;app-server \</span><br><span class="line">  -Dmaven.home&#x3D;&#x2F;home&#x2F;mark&#x2F;idea-IU-182.4129.33&#x2F;plugins&#x2F;maven&#x2F;lib&#x2F;maven3 -Dclassworlds.conf&#x3D;&#x2F;home&#x2F;mark&#x2F;idea-IU-182.4129.33&#x2F;plugins&#x2F;maven&#x2F;lib&#x2F;maven3&#x2F;bin&#x2F;m2.conf \</span><br><span class="line">  -Dmaven.ext.class.path&#x3D;&#x2F;home&#x2F;mark&#x2F;idea-IU-182.4129.33&#x2F;plugins&#x2F;maven&#x2F;lib&#x2F;maven-event-listener.jar \</span><br><span class="line">  -Dfile.encoding&#x3D;UTF-8 -classpath &#x2F;home&#x2F;mark&#x2F;idea-IU-182.4129.33&#x2F;plugins&#x2F;maven&#x2F;lib&#x2F;maven3&#x2F;boot&#x2F;plexus-classworlds-2.6.0.jar \</span><br><span class="line">  org.codehaus.classworlds.Launcher -Didea.version2019.3.4 \</span><br><span class="line">  clean jetty:run \</span><br><span class="line">  -Djetty.port&#x3D;20000 \</span><br><span class="line">  -Dspring.profiles.active&#x3D;dev \</span><br><span class="line">  -f &#x2F;home&#x2F;mark&#x2F;app&#x2F;app-server</span><br></pre></td></tr></table></figure>
+<h1 id="gdb调试"><a href="#gdb调试" class="headerlink" title="gdb调试"></a>gdb调试</h1><h3 id="虚拟机初始化"><a href="#虚拟机初始化" class="headerlink" title="虚拟机初始化"></a>虚拟机初始化</h3><pre class="mermaid">graph TB;
+main.c[main.c]-->JLI_Launch[java.c JLI_Launch]
+JLI_Launch-->CreateExecutionEnvironment[java_md_solinux.c CreateExecutionEnvironment]
+JLI_Launch-->LoadJavaVM[java_md_solinux.c LoadJavaVM]
+
+
+JLI_Launch-->JVMInit[java_md_solinux.c JVMInit]
+
+
+subgraph LoadJavaVm
+LoadJavaVM-->InnocationFunction[load JNI_CreateJavaVM function]
+InnocationFunction-->JNI_CreateJavaVM[JNI_CreateJavaVM jni.cpp]
+JNI_CreateJavaVM-->create_vm[Thread::create_vm Thread.cpp]
+create_vm-->init_globals[init_globals init.cpp]
+init_globals-->universe_init[universe_init universe.cpp]
+universe_init-->Universe::initialize_heap[Universe::initialize_heap universe.cpp]
+Universe::initialize_heap-->G1CollectedHeap::initialize[G1CollectedHeap::initialize g1CollectedHeap.cpp]
+G1CollectedHeap::initialize-->ConcurrentMark::ConcurrentMark[ConcurrentMark::ConcurrentMark ConcurrentMark.cpp]
+ConcurrentMark::ConcurrentMark-->ConcurrentMarkThread[ConcurrentMarkThread ConcurrentMarkThread.cpp]
+ConcurrentMarkThread-->ConcurrentGCThread[ConcurrentGCThread.cpp]
+ConcurrentGCThread-->ConcurrentGCThread::create_and_start[create_and_start ConcurrentGCThread.cpp]
+G1CollectedHeap::initialize-->ConcurrentG1Refine::ConcurrentG1Refine[ConcurrentG1Refine::ConcurrentG1Refine concurrentG1Refine.cpp]
+ConcurrentG1Refine::ConcurrentG1Refine-->ConcurrentG1RefineThread
+end
+
+subgraph JavaMainLaunch
+JVMInit-->ContinueInNewThread[java.c  ContinueInNewThread]
+ContinueInNewThread-->ContinueInNewThread0[java_md_solinux.c ContinueInNewThread0]
+ContinueInNewThread0--pthread created and join-->JavaMain[java.c JavaMain]
+end</pre>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> gdb /home/mark/jdk8u/build/linux-x86_64-normal-server-slowdebug/jdk/bin/java</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">set args -classpath /home/mark/jdk8u/build/linux-x86_64-normal-server-slowdebug/jdk/classes:/home/mark/DebugJava/target/classes com.qunhe.instdeco.Main</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">break java.c:378</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+<h3 id="启动应用"><a href="#启动应用" class="headerlink" title="启动应用"></a>启动应用</h3><p><img src="Screenshot-from-2020-04-09-20-51-23.png" alt="heap initialization"></p>
+<h3 id="堆初始化"><a href="#堆初始化" class="headerlink" title="堆初始化"></a>堆初始化</h3><p><img src="Screenshot-from-2020-04-09-20-58-17.png" alt="堆初始化"></p>
+<h3 id="打印gc日志"><a href="#打印gc日志" class="headerlink" title="打印gc日志"></a>打印gc日志</h3><p><img src="image2020-4-10_17-34-27.png" alt="print gc log"></p>
+<p><img src="image2020-4-10_17-35-24.png" alt="gc log print"></p>
+<h3 id="Thread-sleep和LockSupport-park打断点看c-的栈帧"><a href="#Thread-sleep和LockSupport-park打断点看c-的栈帧" class="headerlink" title="Thread.sleep和LockSupport.park打断点看c++的栈帧"></a>Thread.sleep和LockSupport.park打断点看c++的栈帧</h3><p>Thread.sleep　对应的jni函数<br><img src="image2020-4-10_17-40-14.png" alt="Thread sleep"></p>
+<h3 id="LockSupport-park-＝》-Unsafe-parkNanos-暂停线程-这个是juc并发包核心方法之一"><a href="#LockSupport-park-＝》-Unsafe-parkNanos-暂停线程-这个是juc并发包核心方法之一" class="headerlink" title="LockSupport.park ＝》　Unsafe.parkNanos  暂停线程 　这个是juc并发包核心方法之一"></a>LockSupport.park ＝》　Unsafe.parkNanos  暂停线程 　这个是juc并发包核心方法之一</h3><p><img src="Screenshot-from-2020-04-10-17-49-40.png" alt="LockSupport"></p>
+<h1 id="gdb-attach-java-process"><a href="#gdb-attach-java-process" class="headerlink" title="gdb attach java process"></a>gdb attach java process</h1><p><img src="image2020-4-10_17-54-52.png" alt="attach"></p>
+<p><img src="image2020-4-10_20-52-53.png" alt="young gc"></p>
+
       
     </div>
     
@@ -412,7 +468,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -449,7 +505,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#下载-jdk8u-source-code-我这里只考虑linux平台"><span class="nav-number">1.</span> <span class="nav-text">下载 jdk8u source code 我这里只考虑linux平台</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#下载-jdk8u-source-code-我这里只考虑linux平台"><span class="nav-number">1.</span> <span class="nav-text">下载 jdk8u source code 我这里只考虑linux平台</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译构建"><span class="nav-number">2.</span> <span class="nav-text">编译构建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#java命令启动应用程序"><span class="nav-number">3.</span> <span class="nav-text">java命令启动应用程序</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#java-classpath裸奔"><span class="nav-number">3.0.1.</span> <span class="nav-text">java + classpath裸奔</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#maven启动"><span class="nav-number">3.0.2.</span> <span class="nav-text">maven启动</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gdb调试"><span class="nav-number">4.</span> <span class="nav-text">gdb调试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#虚拟机初始化"><span class="nav-number">4.0.1.</span> <span class="nav-text">虚拟机初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动应用"><span class="nav-number">4.0.2.</span> <span class="nav-text">启动应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#堆初始化"><span class="nav-number">4.0.3.</span> <span class="nav-text">堆初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#打印gc日志"><span class="nav-number">4.0.4.</span> <span class="nav-text">打印gc日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Thread-sleep和LockSupport-park打断点看c-的栈帧"><span class="nav-number">4.0.5.</span> <span class="nav-text">Thread.sleep和LockSupport.park打断点看c++的栈帧</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LockSupport-park-＝》-Unsafe-parkNanos-暂停线程-这个是juc并发包核心方法之一"><span class="nav-number">4.0.6.</span> <span class="nav-text">LockSupport.park ＝》　Unsafe.parkNanos  暂停线程 　这个是juc并发包核心方法之一</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gdb-attach-java-process"><span class="nav-number">5.</span> <span class="nav-text">gdb attach java process</span></a></li></ol></div>
             
 
           </div>
