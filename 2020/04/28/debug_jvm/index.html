@@ -88,14 +88,13 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://s1.ax1x.com/2020/06/03/tdgRN4.png">
 <meta property="og:image" content="https://s1.ax1x.com/2020/06/03/tdgJnf.png">
-<meta property="og:image" content="https://s1.ax1x.com/2020/06/03/tdgjCd.png">
 <meta property="og:image" content="https://s1.ax1x.com/2020/06/03/tdcNWR.png">
 <meta property="og:image" content="https://s1.ax1x.com/2020/06/03/tdcxmT.png">
 <meta property="og:image" content="https://s1.ax1x.com/2020/06/03/tdcxmT.png">
 <meta property="og:image" content="https://s1.ax1x.com/2020/06/03/tdgm7D.png">
 <meta property="og:image" content="https://s1.ax1x.com/2020/06/03/td6TR1.png">
 <meta property="article:published_time" content="2020-04-28T12:44:01.000Z">
-<meta property="article:modified_time" content="2020-06-03T12:41:33.750Z">
+<meta property="article:modified_time" content="2020-06-03T12:54:08.762Z">
 <meta property="article:author" content="fanzhengchen">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://s1.ax1x.com/2020/06/03/tdgRN4.png">
@@ -326,6 +325,16 @@ JLI_Launch-->JVMInit[java_md_solinux.c JVMInit]
 
 subgraph LoadJavaVm
 LoadJavaVM-->InnocationFunction[load JNI_CreateJavaVM function]
+end
+
+subgraph JavaMainLaunch
+JVMInit-->ContinueInNewThread[java.c  ContinueInNewThread]
+ContinueInNewThread-->ContinueInNewThread0[java_md_solinux.c ContinueInNewThread0]
+ContinueInNewThread0--pthread created and join-->JavaMain[java.c JavaMain]
+end</pre>
+
+<pre class="mermaid">graph TD;
+LoadJavaVM-->InnocationFunction[load JNI_CreateJavaVM function]
 InnocationFunction-->JNI_CreateJavaVM[JNI_CreateJavaVM jni.cpp]
 JNI_CreateJavaVM-->create_vm[Thread::create_vm Thread.cpp]
 create_vm-->init_globals[init_globals init.cpp]
@@ -337,19 +346,12 @@ ConcurrentMark::ConcurrentMark-->ConcurrentMarkThread[ConcurrentMarkThread Concu
 ConcurrentMarkThread-->ConcurrentGCThread[ConcurrentGCThread.cpp]
 ConcurrentGCThread-->ConcurrentGCThread::create_and_start[create_and_start ConcurrentGCThread.cpp]
 G1CollectedHeap::initialize-->ConcurrentG1Refine::ConcurrentG1Refine[ConcurrentG1Refine::ConcurrentG1Refine concurrentG1Refine.cpp]
-ConcurrentG1Refine::ConcurrentG1Refine-->ConcurrentG1RefineThread
-end
-
-subgraph JavaMainLaunch
-JVMInit-->ContinueInNewThread[java.c  ContinueInNewThread]
-ContinueInNewThread-->ContinueInNewThread0[java_md_solinux.c ContinueInNewThread0]
-ContinueInNewThread0--pthread created and join-->JavaMain[java.c JavaMain]
-end</pre>
+ConcurrentG1Refine::ConcurrentG1Refine-->ConcurrentG1RefineThread</pre>
 
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> gdb /home/mark/jdk8u/build/linux-x86_64-normal-server-slowdebug/jdk/bin/java</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">set args -classpath /home/mark/jdk8u/build/linux-x86_64-normal-server-slowdebug/jdk/classes:/home/mark/DebugJava/target/classes com.qunhe.instdeco.Main</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">break java.c:378</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">run</span><br></pre></td></tr></table></figure>
 <h3 id="启动应用"><a href="#启动应用" class="headerlink" title="启动应用"></a>启动应用</h3><p><img src="https://s1.ax1x.com/2020/06/03/tdgRN4.png" alt="launch"></p>
 <h3 id="堆初始化"><a href="#堆初始化" class="headerlink" title="堆初始化"></a>堆初始化</h3><p><img src="https://s1.ax1x.com/2020/06/03/tdgJnf.png" alt="堆初始化"></p>
-<h3 id="打印gc日志"><a href="#打印gc日志" class="headerlink" title="打印gc日志"></a>打印gc日志</h3><p><img src="https://s1.ax1x.com/2020/06/03/tdgjCd.png" alt="print gc log"></p>
+<h3 id="打印gc日志"><a href="#打印gc日志" class="headerlink" title="打印gc日志"></a>打印gc日志</h3><p><img src alt="print gc log"></p>
 <p><img src="https://s1.ax1x.com/2020/06/03/tdcNWR.png" alt="gc log print"></p>
 <h3 id="Thread-sleep和LockSupport-park打断点看c-的栈帧"><a href="#Thread-sleep和LockSupport-park打断点看c-的栈帧" class="headerlink" title="Thread.sleep和LockSupport.park打断点看c++的栈帧"></a>Thread.sleep和LockSupport.park打断点看c++的栈帧</h3><p>Thread.sleep　对应的jni函数<br><img src="https://s1.ax1x.com/2020/06/03/tdcxmT.png" alt="Thread sleep"></p>
 <h3 id="LockSupport-park-＝》-Unsafe-parkNanos-暂停线程-这个是juc并发包核心方法之一"><a href="#LockSupport-park-＝》-Unsafe-parkNanos-暂停线程-这个是juc并发包核心方法之一" class="headerlink" title="LockSupport.park ＝》　Unsafe.parkNanos  暂停线程 　这个是juc并发包核心方法之一"></a>LockSupport.park ＝》　Unsafe.parkNanos  暂停线程 　这个是juc并发包核心方法之一</h3><p><img src="https://s1.ax1x.com/2020/06/03/tdcxmT.png" alt="LockSupport"></p>
